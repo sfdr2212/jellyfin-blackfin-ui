@@ -13,11 +13,13 @@
  * above works and remains licensed under GPL-2.0. You may use, modify and
  * redistribute it under the same terms.
  *
- * Changes in BlackFin (modified 2026-06-28):
+ * Changes in BlackFin (modified 2026-09-05):
  * - Forked from NeutralFin 1.3.0 as a personal customization base
  * - Footer text rebranded to BlackFin
  * - Added a "BlackFin custom overrides" section at the top of :root for
  *   easy tweaking (see below)
+ * - Matched ElegantFin v26.09.05 card scaling (fewer landscape cards per
+ *   row, --resumeCardScale for Continue Watching)
  *
  * Inherited NeutralFin changes (by KartoffelChipss):
  * - Grey color scheme applied
@@ -46,6 +48,7 @@
      *   --activeColor: rgb(0, 160, 220);   accent (focus/hover) color
      *   --uiAccentColor: rgb(0, 160, 220); links & highlights
      *   --btnMiniPlayColor: rgb(220, 40, 90); play button color
+     *   --resumeCardScale: 1.25;           enlarge Continue Watching cards
      * ===================================================================== */
 
     /* Base theme colors */
@@ -191,6 +194,10 @@
     --miniOverlayButtonVisibility: block;
 
     --backdropTrimFromTop: 10%;
+
+    /* use 1 to keep Continue Watching cards normal (ElegantFin v26 default);
+     * use numbers greater than 1.0 to enlarge them (example: 1.25) */
+    --resumeCardScale: 1;
 }
 
 /* Fix media bar container position */
@@ -793,12 +800,9 @@ body {
         --cardCount: 9;
     }
 
-    .backdropCard {
-        --cardCount: 9;
-    }
-
+    .backdropCard,
     .overflowBackdropCard {
-        --cardCount: 8;
+        --cardCount: 7;
     }
 }
 
@@ -818,16 +822,10 @@ body {
         --cardCount: 9;
     }
 
-    .backdropCard {
-        --cardCount: 9;
-    }
-
-    .overflowBackdropCard {
-        --cardCount: 8;
-    }
+    /* backdrop counts inherit from 220em so landscape cards stay larger */
 }
 
-/* 10 posters, 8 thumbs */
+/* 10 posters, 8 thumbs, 1440p */
 @media (max-width: 170em) {
     .portraitCard,
     .squareCard {
@@ -843,12 +841,9 @@ body {
         --cardCount: 9;
     }
 
-    .backdropCard {
-        --cardCount: 8;
-    }
-
+    .backdropCard,
     .overflowBackdropCard {
-        --cardCount: 7;
+        --cardCount: 6;
     }
 }
 
@@ -868,12 +863,9 @@ body {
         --cardCount: 7;
     }
 
-    .backdropCard {
-        --cardCount: 7;
-    }
-
+    .backdropCard,
     .overflowBackdropCard {
-        --cardCount: 6;
+        --cardCount: 5;
     }
 }
 
@@ -889,28 +881,22 @@ body {
         --cardCount: 7;
     }
 
-    .layout-tv .portraitCard,
-    .layout-tv .squareCard,
-    .layout-tv .overflowPortraitCard,
-    .layout-tv .overflowSquareCard {
-        --cardCount: 6;
-    }
-
     .squareCard:has(.cardFooter) {
         --cardCount: 6;
     }
 
-    .backdropCard {
-        --cardCount: 6;
-    }
-
+    .backdropCard,
+    .layout-tv .portraitCard,
+    .layout-tv .squareCard,
+    .layout-tv .overflowPortraitCard,
+    .layout-tv .overflowSquareCard,
     .overflowBackdropCard {
         --cardCount: 5;
     }
 
     .layout-tv .backdropCard,
     .layout-tv .overflowBackdropCard {
-        --cardCount: 4;
+        --cardCount: 3;
     }
 }
 
@@ -927,12 +913,9 @@ body {
         --cardCount: 6;
     }
 
-    .backdropCard {
-        --cardCount: 6;
-    }
-
+    .backdropCard,
     .overflowBackdropCard {
-        --cardCount: 5;
+        --cardCount: 4;
     }
 }
 
@@ -1021,10 +1004,11 @@ body {
 }
 
 .card {
-    --effectiveWidth: calc((99vw - (var(--sidePadding) * 2)));
+    --padding: 0.375em;
+    --effectiveWidth: calc(((100vw - (var(--padding) * 2)) - (var(--sidePadding) * 2)));
     --cardWidth: calc(var(--effectiveWidth) / var(--cardCount) - var(--itemColumnGap));
     width: var(--cardWidth) !important;
-    padding: 0.375em;
+    padding: var(--padding);
     transition: width 0.5s;
     box-sizing: content-box;
 }
@@ -1037,6 +1021,7 @@ body {
 }
 
 .layout-mobile .card {
+    --padding: 1px;
     --cardWidth: calc(var(--effectiveWidth) / var(--cardCount));
 }
 
@@ -1045,6 +1030,12 @@ body {
     .layout-mobile .card {
         --effectiveWidth: calc((65vw - (var(--sidePadding) * 2)));
     }
+}
+
+#homeTab .overflowBackdropCard[data-positionticks],
+.nextUpItems > .card,
+#resumableItems > .card {
+    width: calc(var(--cardWidth) * var(--resumeCardScale)) !important;
 }
 
 .detailPageWrapperContainer {
